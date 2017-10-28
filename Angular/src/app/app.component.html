@@ -1,15 +1,28 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
+<div class="container-fluid">
   <h1>
     Welcome to {{title}}!
   </h1>
-  <label for="inputStart">Startort</label>
-  <input name="inputStart" type="text"/>
-  <label for="inputDestination">Zielort</label>
-  <input name="inputDestination" type="text"/>
-  <label for="inputDate">Datum</label>
-  <input name="inputDate" type="datetime-local"/>
-  <input type="submit" ng-click="" value="Bahn oder Auto"/>
+  <div class="col-sm-4">
+      <form>
+          <div class="form-group">
+              <label for="inputStart">Startort</label>
+              <input class="form-control" name="inputStart"  type="text" [(ngModel)]="start" required/>
+          </div>
+          <div class="form-group">
+              <label for="inputDestination">Zielort</label>
+              <input class="form-control" name="inputDestination" type="text" [(ngModel)]="destination" required/>
+          </div>
+          <div class="form-group">
+              <label for="inputDate">Datum</label>
+              <input class="form-control" name="inputDate" type="datetime-local" [(ngModel)]="date_time" required/>
+          </div>
+          <div>
+              <button class="btn btn-primary" type="submit" (click)="getValues()">Bahn oder Auto</button>
+      </div>
+      </form>
 
-</div>
+  </div>
+
+
 
