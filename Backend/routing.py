@@ -4,6 +4,7 @@ import json
 import logging
 import pprint
 import json
+from random import randint
 
 #import ml-model as ml
 
@@ -41,16 +42,17 @@ class Routing:
         result =  self.get_route(start, destination, timestamp, "driving")
         feature = []
         feature.append(result['duration']['value'])
-        feature.append(result['distance']['value'])        
-        return result  
+        feature.append(result['distance']['value']) 
+        logging.debug("Feature set car: " + str(feature))       
+        return feature  
 
     def get_route_bike(self, start, destination, timestamp):
         feature = []
         result =  self.get_route(start, destination, timestamp, "bicycling")
         feature.append(result['duration']['value'])
         feature.append(result['distance']['value'])
-        logging.debug(feature)
-        return result
+        logging.debug("Feature set bike: " + str(feature))
+        return feature
 
     def get_route_transit(self, start, destination, timestamp):
         result = direction_result = self.gmaps.directions(start, destination, "transit")
@@ -63,20 +65,44 @@ class Routing:
                 feature.append(l['distance']['value'])
             
         
-        logging.debug(feature)
+        logging.debug("Feature set transit: " + str(feature))
         return feature
     
-    def calc_best_time(self, start, destination, timestamp):
+    def build_feature_set(self, start, destination, timestamp):
         res = {}
         feature = []
 
+        feature.append(start)
         feature.extend(self.get_route_car(start, destination, timestamp))
         feature.extend(self.get_route_bike(start, destination, timestamp))
         feature.extend(self.get_route_transit(start, destination, timestamp))
 
-        # Add ml here
+        logging.debug("Featureset: " + str(feature))
 
-        logging.debug("Feature matrix: " + str(feature))
+        return feature
+
+class Reasoning: 
+
+    def __init__(self):
+        pass 
+
+    def train_model(self, feature_list, type):
+        # Call ML
+
+        return True
+
+    def recommendation(self, feature_list):
+        val = {}
+
+        val['car'] = randint(0, 9)
+        val['bike'] = randint(0,9)
+        val['transit'] = randint(0,9)
+
+        recommendation = max(val, key=val.get)
+
+        return recommendation
+
+
 
 
 
