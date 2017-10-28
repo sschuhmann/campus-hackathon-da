@@ -33,8 +33,8 @@ def create_dataframe(location, vehicle):
     #get twitter data
     dataframe['StauScore'] = recent_schlagwort_score('stau', location)
     dataframe['DBVerspätungsScore'] = recent_schlagwort_score('Bahn Verspätung', location)
-    dataframe['FerienScore']recent_schlagwort_score('Ferien', location)
-    dataframe['Feiertag'] recent_schlagwort_score('Feiertag', location)
+    dataframe['FerienScore'] = recent_schlagwort_score('Ferien', location)
+    dataframe['Feiertag'] = recent_schlagwort_score('Feiertag', location)
 
     #set vehicle
     dataframe['vehicle'] = vehicle
