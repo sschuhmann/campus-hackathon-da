@@ -2,7 +2,7 @@ from flask import Flask
 import logging
 from flask import request
 
-import routing
+from routing import route
 
 server = Flask(__name__)
 
@@ -11,9 +11,13 @@ route = routing.Route()
 @server.route('/route/')
 def get_route():
     logging.info("Request")
-    content = request.json
+    start = request.args.get('start')
+    destination = requests.args.get('destination')
+    time = requests.args.get('date_time')
     logging.info(str(content))
-    route.get_route_car(content[start], content[destination])
+    route.get_route_car(content[start],
+                content[destination])
+
     return "Hallo Welt"
 
 @server.route('')
