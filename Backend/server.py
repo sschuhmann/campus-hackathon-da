@@ -34,7 +34,14 @@ def get_route():
 
 @server.route('/feedback', methods=["POST"])
 def feedback():
-    logging.info("Test")
+    logging.info("Feedback called")
+
+    content = request.json
+
+    if not content:
+        return "No data send"
+
+    
     return "OK"
 
 if __name__ == '__main__':
