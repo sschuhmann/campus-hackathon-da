@@ -1,26 +1,41 @@
 from flask import Flask
-import logging
 from flask import request
+from flask_cors import CORS
+from flask import jsonify
+
+import routing
+
+import logging
+
 
 server = Flask(__name__)
+CORS(server)
 
-@server.route('/route/')
+r = routing.Routing()
+logging.getLogger().setLevel(logging.DEBUG)
+
+@server.route('/route', methods=['POST'])
 def get_route():
-    logging.info("Request")
-    start = request.json
-    logging.info(str(content))
+    logging.debug("Getting location request")
+    content = request.json
+
+    if not content:
+        return "No data send"
+
+    logging.error(str(content))
+
+    if True:
+        r.calc_best_time(content['start'], content['destination'], "")
+        return jsonify('{"recommendation": "car"}')
+    else:
+        return "Wrong dataset"
 
     return "Hallo Welt"
 
-@server.route('/')
-def store_user_settings():
-    logging.info("Store settings")
-    content = request.json
-    logging.info(str(content))
-    try:
-        pass
-    except:
-        pass
+@server.route('/feedback', methods=["POST"])
+def feedback():
+    logging.info("Test")
+    return "OK"
 
 if __name__ == '__main__':
-    server.run(debug=True)
+    server.run(host="0.0.0.0", port=12000,debug=True)
