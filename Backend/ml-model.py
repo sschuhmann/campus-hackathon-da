@@ -1,31 +1,37 @@
-import time
-import json
-import datetime
 from sklearn.neural_network import MLPClassifier
 from twython import Twython
 import pickle
+import os.path
+import numpy as np
 
-def feedback(vehicle, location):
+def feedback(requestframe, vehicle):
     # receive the actual transport vehicle that was taken
 
+    location = requestframe[0]
     # dataframe creation
-    create_dataframe(location, vehicle)
+    dataframe = create_dataframe(requestframe, vehicle)
     #add dataframe to the data table
     writeFrame(dataframe)
 
     # load ml classifier
-    # if classifier not existent
+    if not os.path.isfile('model/classifier.pickle'):
         #create classifier
-        classifier = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
-    #else
+        classifier = MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(20,20), random_state=1)
+    else:
         #load classifier
         f = open('model/classifier.pickle', 'rb')
         classifier = pickle.load(f)
         f.close()
 
-    X = [value for dataframe[]removekey(dataframe, 'vehicle')]
     # update the ml-classifier
-    classifier.partial_fit(X,y)
+    print(dataframe)
+    X = [dataframe[key] for key in removekey(dataframe, 'vehicle').keys()]
+    X = [[x] for x in X]
+    X = np.array(X)
+    print(X)
+
+    y = [dataframe['vehicle']]
+    classifier.partial_fit(X,y, [1,2,3])
 
     #store the classifier in /model
     f = open('model/classifier.pickle', 'wb')
@@ -33,12 +39,29 @@ def feedback(vehicle, location):
     f.close()
     return ''
 
-def models_opinion(location):
-    return ''#
+def models_opinion(requestframe):
+
+    #create dataframe
+    dataframe = create_dataframe(requestframe, '')
+    X = removekey(dataframe, 'vehicle')
+
+    #load classifier
+    f = open('model/classifier.pickle', 'rb')
+    classifier = pickle.load(f)
+    f.close()
+
+    return classifier.predict(X) #TODO Formulate Prediction for Backend
 
 
-def create_dataframe(location, vehicle):
+def create_dataframe(requestframe, vehicle):
     dataframe = {}
+    location = requestframe[0]
+    dataframe['rq1'] = requestframe[1]
+    dataframe['rq2'] = requestframe[2]
+    dataframe['rq3'] = requestframe[3]
+    dataframe['rq4'] = requestframe[4]
+    dataframe['rq5'] = requestframe[5]
+    dataframe['rq6'] = requestframe[6]
 
     #get Weekday
     datetime_object = time.strptime(time.ctime(), '%a %b %d %H:%M:%S %Y')
@@ -100,7 +123,7 @@ def recent_schlagwort_score(schlagwort, location):
 def writeFrame(dataframe):
     string_dataframe = ''
     for key in dataframe.keys():
-        string_dataframe.append(key + ':' + dataframe[key] + ',')
+        string_dataframe += key + ':' + str(dataframe[key]) + ','
 
     f = open('datatable', 'a')
     f.write(string_dataframe + '\n')  # python will convert \n to os.linesep
@@ -113,3 +136,5 @@ def removekey(d, key):
     r = dict(d)
     del r[key]
     return r
+
+# for testing: feedback(['Darmstadt', 2334, 35147, 6022, 31518, 1080, 30066], 'Car')
