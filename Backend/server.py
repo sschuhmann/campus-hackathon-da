@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask import jsonify
 
 import routing
+from routing import Reasoning
 
 import logging
 
@@ -12,6 +13,8 @@ server = Flask(__name__)
 CORS(server)
 
 r = routing.Routing()
+reasoner = Reasoning()
+
 logging.getLogger().setLevel(logging.DEBUG)
 
 @server.route('/route', methods=['POST'])
@@ -22,15 +25,16 @@ def get_route():
     if not content:
         return "No data send"
 
-    logging.error(str(content))
+    logging.debug(str(content))
 
     if True:
-        r.calc_best_time(content['start'], content['destination'], "")
-        return jsonify('{"recommendation": "car"}')
+        feature_set = r.build_feature_set(content['start'], content['destination'], "")
+        res = reasoner.recommendation(feature_set)
+        return jsonify(res), 200
     else:
-        return "Wrong dataset"
+        return "Wrong dataset", 206
 
-    return "Hallo Welt"
+    return 
 
 @server.route('/feedback', methods=["POST"])
 def feedback():
@@ -41,8 +45,14 @@ def feedback():
     if not content:
         return "No data send"
 
-    
-    return "OK"
+    logging.debug(str(content))
+
+    feature_set = r.build_feature_set(content['start'], content['destination'], "")
+    feature_type = content['type']
+
+    reasoner.train_model(feature_set, feature_type)
+
+    return "Ok", 200
 
 if __name__ == '__main__':
     server.run(host="0.0.0.0", port=12000,debug=True)
