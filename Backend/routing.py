@@ -20,7 +20,7 @@ class Routing:
 
     def get_route_train(self, start, destination):
         direction_result = self.gmaps.directions('Saarbruecken',
-                                'Zweibrücken',
+                                'Zweibruecken',
                                 mode='train',
                                 departure_time=now)
 
