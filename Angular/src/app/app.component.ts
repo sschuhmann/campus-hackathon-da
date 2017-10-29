@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {HttpHeaders} from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -10,25 +11,28 @@ import {HttpHeaders} from '@angular/common/http';
 
 
 export class AppComponent {
-
+  id: string;
   start: string;
   destination: string;
   date_time: string;
-  results: string;
+  visibility = false;
+  imagePath: string;
 
 
-  constructor(private httpClient: HttpClient) {
-
-  }
+  constructor(private httpClient: HttpClient) {  }
 
   getValues() {
     const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
-    headers.append('Access-Control-Allow-Origin', '*');
-
-    this.httpClient.post('http://192.168.179.43:12000/route', {start: this.start, destination: this.destination, date_time: this.date_time},
+    this.httpClient.post('http://192.168.179.43:12000/route',
+    {start: this.start, destination: this.destination, date_time: this.date_time},
     {headers: headers})
     .subscribe(data => {
-      this.results = data['results'];
+      console.log(data['recommendation']);
+
+      this.imagePath = '/assets/Images/' + data['recommendation'] + '.png';
+      this.visibility = true;
+    }, (err: HttpErrorResponse) => {
+      console.log('Fehler');
     });
   }
 }

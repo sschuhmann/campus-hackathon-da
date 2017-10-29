@@ -1,10 +1,17 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div class="container-fluid">
-  <h1>
+
+
+
+<div class="container">
+<h1 style="text-align: center">
     Welcome to Hong Kong!
-  </h1>
+</h1>
+</div>
+<div class="container-fluid">
+  <div class="col-sm-2"></div>
+
   <div class="col-sm-4">
-      <form>
+      <form  name="main" ngNativeValidate>
           <div class="form-group">
               <label for="inputStart">Startort</label>
               <input class="form-control" name="inputStart" placeholder="Darmstadt" type="text" [(ngModel)]="start" required/>
@@ -15,16 +22,29 @@
           </div>
           <div class="form-group">
               <label for="inputDate">Datum</label>
-              <input class="form-control" name="inputDate" placeholder="" type="datetime-local" [(ngModel)]="date_time" required/>
+              <input class="form-control" name="inputDate" type="datetime-local" [(ngModel)]="date_time" required/>
           </div>
           <div>
-              <button class="btn btn-primary" type="submit" (click)="getValues()">Go!</button>
-        </div>
-        <div>
-          <output name="outputPreferred" [(ngModel)]="results">Bahn oder Auto</output>
+              <input class="btn btn-primary" type="submit" (click)="getValues()" value="Go!"/>
         </div>
       </form>
-
+      <form name="feedback">
+        <div class="form-group" *ngIf="visibility">
+        <div class="btn-group">
+            <button id="buttonCar" type="button" class="btn btn-primary">Auto</button>
+            <button id="buttonTrain" type="button" class="btn btn-primary">Bahn</button>
+            <button id="buttonBike" type="button" class="btn btn-primary">Fahrrad</button>
+        </div>
+        <input class="btn btn-primary" type="submit" (click)="getValues()" value="Feedback senden"/>
+      </div>
+    </form>
+  </div>
+    <div class="col-sm-4" *ngIf="visibility">
+        <h2>
+            Unsere Empfehlung
+        </h2>
+      <img id="imageRecommendation" [src]="imagePath" width="300" height="250"/>
+    </div>
   </div>
 
 
