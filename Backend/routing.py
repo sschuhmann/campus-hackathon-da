@@ -33,7 +33,7 @@ class Routing:
                 for l in n['legs']:
                     logging.debug(str(l['distance']))
                     logging.debug("Duration " + str(l['duration']))
-                    logging.debug("Traffric " + str(l['duration_in_traffic']))
+                    logging.debug("Traffric " + str(lnable to open file (unabl['duration_in_traffic']))
 
         except Exception as e:
             logging.error("Error getting data " + str(e))
@@ -51,8 +51,7 @@ class Routing:
             feature.append(result['distance']['value']) 
             logging.debug("Feature set car: " + str(feature))       
             return feature 
-        except Exception as e:
-            logging.error("Error getting car value: " + str(e))
+        except:
             feature.append(sys.maxint, sys.maxint)
             return feature
 
@@ -88,8 +87,8 @@ class Routing:
                     logging.debug("Train: " + str(l['duration']))
                     feature.append(l['duration']['value'])
                     feature.append(l['distance']['value'])
-        except Exception as e:
-            logging.debug("Error getting transit route: " + str(e))
+        except:
+            logging.debug("Error getting transit route")
             feature.append(sys.maxint, sys.maxint)
         
         logging.debug("Feature set transit: " + str(feature))
@@ -114,7 +113,6 @@ class Reasoning:
 
     def train_model(self, feature_list, vehicle_type):
         logging.debug("Train ML model")
-        logging.debug("Trainingsdata: " + str(feature_list) + " : " + str(vehicle_type) )
         
         try:
             ml.feedback(feature_list, vehicle_type)
@@ -127,11 +125,7 @@ class Reasoning:
         val = {}
         recommendation = {}
 
-        try: 
-            logging.info(str(feature_list))
-            recommendation = ml.models_opinion(feature_list)
-        except Exception as e:
-            logging.error("Error calling ml backend: " + str(e)) 
+        recommendation = ml.models_opinion(feature_list)
 
         recommendation['recommendation'] = max(val, key=val.get)
 

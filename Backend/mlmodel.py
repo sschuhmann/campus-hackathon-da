@@ -59,7 +59,7 @@ def models_opinion(requestframe):
     decision_dict['car'] = decision[0][0]
     decision_dict['bike'] = decision[0][1]
     decision_dict['transit'] = decision[0][2]
-    return decision
+    return decision_dict
 
 
 def create_dataframe(requestframe, vehicle):
@@ -82,30 +82,19 @@ def create_dataframe(requestframe, vehicle):
     dataframe['Daytime'] = minutes_since_midnight
 
     #get twitter data
-    #dataframe['StauScore'] = recent_schlagwort_score('stau', location)
-    #dataframe['DBVerspaetungsScore'] = recent_schlagwort_score('Bahn Verspaetung', location)
-    #dataframe['FerienScore'] = recent_schlagwort_score('Ferien', location)
-    #dataframe['Feiertag'] = recent_schlagwort_score('Feiertag', location)
-    #dataframe['Sonnig'] = recent_schlagwort_score('Sonnig', location)
-    #dataframe['Regen'] = recent_schlagwort_score('Regen', location)
-    #dataframe['Schnee'] = recent_schlagwort_score('Schnee', location)
-    #dataframe['Sturm'] = recent_schlagwort_score('Feiertag', location)
-    #dataframe['Verkehr'] = recent_schlagwort_score('Verkehr', location)
-    #dataframe['Fahrrad'] = recent_schlagwort_score('Fahrrad', location)
-    #dataframe['Auto'] = recent_schlagwort_score('Auto', location)
-    #dataframe['Bahn'] = recent_schlagwort_score('Bahn', location)
-    dataframe['StauScore'] = random.randrange(0, 1)
-    dataframe['DBVerspaetungsScore'] = random.randrange(0, 1)
-    dataframe['FerienScore'] = random.randrange(0, 1)
-    dataframe['Feiertag'] = random.randrange(0, 1)
-    dataframe['Sonnig'] = random.randrange(0, 1)
-    dataframe['Regen'] = random.randrange(0, 1)
-    dataframe['Schnee'] = random.randrange(0, 1)
-    dataframe['Sturm'] = random.randrange(0, 1)
-    dataframe['Verkehr'] = random.randrange(0, 1)
-    dataframe['Fahrrad'] = random.randrange(0, 1)
-    dataframe['Auto'] = random.randrange(0, 1)
-    dataframe['Bahn'] = random.randrange(0, 1)
+    dataframe['StauScore'] = recent_schlagwort_score('stau', location)
+    dataframe['DBVerspaetungsScore'] = recent_schlagwort_score('Bahn Verspaetung', location)
+    dataframe['FerienScore'] = recent_schlagwort_score('Ferien', location)
+    dataframe['Feiertag'] = recent_schlagwort_score('Feiertag', location)
+    dataframe['Sonnig'] = recent_schlagwort_score('Sonnig', location)
+    dataframe['Regen'] = recent_schlagwort_score('Regen', location)
+    dataframe['Schnee'] = recent_schlagwort_score('Schnee', location)
+    dataframe['Sturm'] = recent_schlagwort_score('Feiertag', location)
+    dataframe['Verkehr'] = recent_schlagwort_score('Verkehr', location)
+    dataframe['Fahrrad'] = recent_schlagwort_score('Fahrrad', location)
+    dataframe['Auto'] = recent_schlagwort_score('Auto', location)
+    dataframe['Bahn'] = recent_schlagwort_score('Bahn', location)
+
 
     #set vehicle
     if vehicle == 'car':
