@@ -26,13 +26,14 @@ export class AppComponent {
 
   getValues() {
     const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
-    this.httpClient.post('http://192.168.179.46:12000/route',
+    this.httpClient.post('http://192.168.179.67:12000/route',
     {start: this.start, destination: this.destination, date_time: this.date_time},
     {headers: headers})
     .subscribe(data => {
       this.id = data['id'];
       this.imagePath = '/assets/Images/' + data['recommendation'] + '.png';
       this.visibility = true;
+      this.visibilityFeedback = false;
     }, (err: HttpErrorResponse) => {
       console.log('Fehler');
     });
@@ -40,7 +41,7 @@ export class AppComponent {
 
   sendFeedback(type: string) {
     const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
-    this.httpClient.post('http://192.168.179.46:12000/feedback',
+    this.httpClient.post('http://192.168.179.67:12000/feedback',
     {id: this.id, type: type},
     {headers: headers})
     .subscribe(data => {
