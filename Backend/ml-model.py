@@ -84,7 +84,7 @@ def create_dataframe(requestframe, vehicle):
 
     #get twitter data
     #dataframe['StauScore'] = recent_schlagwort_score('stau', location)
-    #dataframe['DBVerspätungsScore'] = recent_schlagwort_score('Bahn Verspätung', location)
+    #dataframe['DBVerspaetungsScore'] = recent_schlagwort_score('Bahn Verspaetung', location)
     #dataframe['FerienScore'] = recent_schlagwort_score('Ferien', location)
     #dataframe['Feiertag'] = recent_schlagwort_score('Feiertag', location)
     #dataframe['Sonnig'] = recent_schlagwort_score('Sonnig', location)
@@ -96,7 +96,7 @@ def create_dataframe(requestframe, vehicle):
     #dataframe['Auto'] = recent_schlagwort_score('Auto', location)
     #dataframe['Bahn'] = recent_schlagwort_score('Bahn', location)
     dataframe['StauScore'] = random.randrange(0, 1)
-    dataframe['DBVerspätungsScore'] = random.randrange(0, 1)
+    dataframe['DBVerspaetungsScore'] = random.randrange(0, 1)
     dataframe['FerienScore'] = random.randrange(0, 1)
     dataframe['Feiertag'] = random.randrange(0, 1)
     dataframe['Sonnig'] = random.randrange(0, 1)
