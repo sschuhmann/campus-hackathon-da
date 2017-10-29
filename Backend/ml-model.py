@@ -54,10 +54,11 @@ def models_opinion(requestframe):
     classifier = keras.models.load_model('model/classifier')
 
     decision = classifier.predict(np.array(X)).tolist() #TODO Formulate Prediction for Backend
+    print(decision)
     decision_dict = {}
-    decision_dict['car'] = decision[0]
-    decision_dict['bike'] = decision[1]
-    decision_dict['transit'] = decision[2]
+    decision_dict['car'] = decision[0][0]
+    decision_dict['bike'] = decision[0][1]
+    decision_dict['transit'] = decision[0][2]
     return decision
 
 
