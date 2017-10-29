@@ -7,7 +7,7 @@ import json
 from random import randint
 import sys
 
-#import ml-model as ml
+import mlmodel as ml
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -33,7 +33,7 @@ class Routing:
                 for l in n['legs']:
                     logging.debug(str(l['distance']))
                     logging.debug("Duration " + str(l['duration']))
-                    logging.debug("Traffric " + str(l['duration_in_traffic']))
+                    logging.debug("Traffric " + str(lnable to open file (unabl['duration_in_traffic']))
 
         except Exception as e:
             logging.error("Error getting data " + str(e))
@@ -111,29 +111,22 @@ class Reasoning:
     def __init__(self):
         pass 
 
-    def train_model(self, feature_list, type):
+    def train_model(self, feature_list, vehicle_type):
         logging.debug("Train ML model")
         
+        try:
+            ml.feedback(feature_list, vehicle_type)
+        except Exception as e:
+            logging.error("Error training the model: " + str(e))
+
         return True
 
     def recommendation(self, feature_list):
         val = {}
         recommendation = {}
 
-        val['car'] = randint(0, 9)
-        val['bike'] = randint(0,9)
-        val['transit'] = randint(0,9)
+        recommendation = ml.models_opinion(feature_list)
 
         recommendation['recommendation'] = max(val, key=val.get)
 
-        # Call ML backend
-
         return recommendation
-
-
-
-
-
-
-
-

@@ -20,6 +20,7 @@ reasoner = Reasoning()
 
 logging.getLogger().setLevel(logging.DEBUG)
 
+"""
 @server.route('/tour', methods=['POST'])
 def get_tour():
     logging.debug("Getting tour request")
@@ -27,13 +28,14 @@ def get_tour():
 
     if not content:
         logging.debug("No json content")
-        return jsonify({"Message": "No content"})
 
+        return jsonify({"Message": "No content"})
     try: 
         return jsonify({})
     except:
         return jsonify({"": ""})
 
+""" 
 
 @server.route('/route', methods=['POST'])
 def get_route():
