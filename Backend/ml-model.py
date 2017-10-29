@@ -1,9 +1,7 @@
 import time
 import json
 import datetime
-from sklearn.neural_network import MLPClassifier
 from twython import Twython
-import pickle
 import os.path
 import numpy as np
 import random

@@ -16,6 +16,6 @@ Werkzeug==0.12.2
 time
 datetime
 twython
-sklearn.neural_network
-pickle
 keras
+h5py
+tensorflow
