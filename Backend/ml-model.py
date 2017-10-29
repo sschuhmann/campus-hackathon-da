@@ -1,44 +1,76 @@
 import time
 import json
 import datetime
-from sklearn.neural_network import MLPClassifier
 from twython import Twython
-import pickle
+import os.path
+import numpy as np
+import random
+import keras
+from keras.models import Sequential
+from keras.layers import Dense
 
-def feedback(vehicle, location):
+
+def feedback(requestframe, vehicle):
     # receive the actual transport vehicle that was taken
 
+    location = requestframe[0]
     # dataframe creation
-    create_dataframe(location, vehicle)
+    dataframe = create_dataframe(requestframe, vehicle)
     #add dataframe to the data table
     writeFrame(dataframe)
-
+    set = True
     # load ml classifier
-    # if classifier not existent
+    if not os.path.isfile('model/classifier'):
         #create classifier
-        classifier = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
-    #else
-        #load classifier
-        f = open('model/classifier.pickle', 'rb')
-        classifier = pickle.load(f)
-        f.close()
+        classifier = Sequential()
+        classifier.add(Dense(1, input_dim=20, activation='relu'))
+        classifier.add(Dense(8, activation='relu'))
+        classifier.add(Dense(3, activation='softmax'))
+        classifier.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 
-    X = [value for dataframe[]removekey(dataframe, 'vehicle')]
+    else:
+        #load classifier
+        classifier = keras.models.load_model('model/classifier')
+
     # update the ml-classifier
-    classifier.partial_fit(X,y)
+    X = [[dataframe[key] for key in removekey(dataframe, 'vehicle').keys()]]
+
+    y = [dataframe['vehicle']]
+
+    classifier.fit(np.array(X),np.array(y),epochs=1, batch_size=1)
 
     #store the classifier in /model
-    f = open('model/classifier.pickle', 'wb')
-    pickle.dump(classifier, f)
-    f.close()
+
+    classifier.save('model/classifier')
     return ''
 
-def models_opinion(location):
-    return ''#
+def models_opinion(requestframe):
+
+    #create dataframe
+    dataframe = create_dataframe(requestframe, '')
+    X = [[dataframe[key] for key in removekey(dataframe, 'vehicle').keys()]]
+
+    #load classifier
+    classifier = keras.models.load_model('model/classifier')
+
+    decision = classifier.predict(np.array(X)).tolist() #TODO Formulate Prediction for Backend
+    print(decision)
+    decision_dict = {}
+    decision_dict['car'] = decision[0][0]
+    decision_dict['bike'] = decision[0][1]
+    decision_dict['transit'] = decision[0][2]
+    return decision
 
 
-def create_dataframe(location, vehicle):
+def create_dataframe(requestframe, vehicle):
     dataframe = {}
+    location = requestframe[0]
+    dataframe['rq1'] = requestframe[1]
+    dataframe['rq2'] = requestframe[2]
+    dataframe['rq3'] = requestframe[3]
+    dataframe['rq4'] = requestframe[4]
+    dataframe['rq5'] = requestframe[5]
+    dataframe['rq6'] = requestframe[6]
 
     #get Weekday
     datetime_object = time.strptime(time.ctime(), '%a %b %d %H:%M:%S %Y')
@@ -50,26 +82,38 @@ def create_dataframe(location, vehicle):
     dataframe['Daytime'] = minutes_since_midnight
 
     #get twitter data
-    dataframe['StauScore'] = recent_schlagwort_score('stau', location)
-    dataframe['DBVerspätungsScore'] = recent_schlagwort_score('Bahn Verspätung', location)
-    dataframe['FerienScore'] = recent_schlagwort_score('Ferien', location)
-    dataframe['Feiertag'] = recent_schlagwort_score('Feiertag', location)
-    dataframe['Sonnig'] = recent_schlagwort_score('Sonnig', location)
-    dataframe['Regen'] = recent_schlagwort_score('Regen', location)
-    dataframe['Schnee'] = recent_schlagwort_score('Schnee', location)
-    dataframe['Sturm'] = recent_schlagwort_score('Feiertag', location)
-    dataframe['Verkehr'] = recent_schlagwort_score('Verkehr', location)
-    dataframe['Fahrrad'] = recent_schlagwort_score('Fahrrad', location)
-    dataframe['Auto'] = recent_schlagwort_score('Auto', location)
-    dataframe['Bahn'] = recent_schlagwort_score('Bahn', location)
+    #dataframe['StauScore'] = recent_schlagwort_score('stau', location)
+    #dataframe['DBVerspaetungsScore'] = recent_schlagwort_score('Bahn Verspaetung', location)
+    #dataframe['FerienScore'] = recent_schlagwort_score('Ferien', location)
+    #dataframe['Feiertag'] = recent_schlagwort_score('Feiertag', location)
+    #dataframe['Sonnig'] = recent_schlagwort_score('Sonnig', location)
+    #dataframe['Regen'] = recent_schlagwort_score('Regen', location)
+    #dataframe['Schnee'] = recent_schlagwort_score('Schnee', location)
+    #dataframe['Sturm'] = recent_schlagwort_score('Feiertag', location)
+    #dataframe['Verkehr'] = recent_schlagwort_score('Verkehr', location)
+    #dataframe['Fahrrad'] = recent_schlagwort_score('Fahrrad', location)
+    #dataframe['Auto'] = recent_schlagwort_score('Auto', location)
+    #dataframe['Bahn'] = recent_schlagwort_score('Bahn', location)
+    dataframe['StauScore'] = random.randrange(0, 1)
+    dataframe['DBVerspaetungsScore'] = random.randrange(0, 1)
+    dataframe['FerienScore'] = random.randrange(0, 1)
+    dataframe['Feiertag'] = random.randrange(0, 1)
+    dataframe['Sonnig'] = random.randrange(0, 1)
+    dataframe['Regen'] = random.randrange(0, 1)
+    dataframe['Schnee'] = random.randrange(0, 1)
+    dataframe['Sturm'] = random.randrange(0, 1)
+    dataframe['Verkehr'] = random.randrange(0, 1)
+    dataframe['Fahrrad'] = random.randrange(0, 1)
+    dataframe['Auto'] = random.randrange(0, 1)
+    dataframe['Bahn'] = random.randrange(0, 1)
 
     #set vehicle
-    if vehicle == 'Car':
-        vehicle = 0
-    if vehicle == 'Bike':
-        vehicle == 1
-    if vehicle == 'Train':
-        vehicle = 3
+    if vehicle == 'car':
+        vehicle = [1,0,0]
+    if vehicle == 'bike':
+        vehicle = [0,1,0]
+    if vehicle == 'transit':
+        vehicle = [0,0,1]
     dataframe['vehicle'] = vehicle
 
     return dataframe
@@ -100,7 +144,7 @@ def recent_schlagwort_score(schlagwort, location):
 def writeFrame(dataframe):
     string_dataframe = ''
     for key in dataframe.keys():
-        string_dataframe.append(key + ':' + dataframe[key] + ',')
+        string_dataframe += key + ':' + str(dataframe[key]) + ','
 
     f = open('datatable', 'a')
     f.write(string_dataframe + '\n')  # python will convert \n to os.linesep

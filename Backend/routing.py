@@ -7,7 +7,7 @@ import json
 from random import randint
 import sys
 
-#import ml-model as ml
+import mlmodel as ml
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -51,7 +51,8 @@ class Routing:
             feature.append(result['distance']['value']) 
             logging.debug("Feature set car: " + str(feature))       
             return feature 
-        except:
+        except Exception as e:
+            logging.error("Error getting car value: " + str(e))
             feature.append(sys.maxint, sys.maxint)
             return feature
 
@@ -87,8 +88,8 @@ class Routing:
                     logging.debug("Train: " + str(l['duration']))
                     feature.append(l['duration']['value'])
                     feature.append(l['distance']['value'])
-        except:
-            logging.debug("Error getting transit route")
+        except Exception as e:
+            logging.debug("Error getting transit route: " + str(e))
             feature.append(sys.maxint, sys.maxint)
         
         logging.debug("Feature set transit: " + str(feature))
@@ -111,29 +112,27 @@ class Reasoning:
     def __init__(self):
         pass 
 
-    def train_model(self, feature_list, type):
+    def train_model(self, feature_list, vehicle_type):
         logging.debug("Train ML model")
+        logging.debug("Trainingsdata: " + str(feature_list) + " : " + str(vehicle_type) )
         
+        try:
+            ml.feedback(feature_list, vehicle_type)
+        except Exception as e:
+            logging.error("Error training the model: " + str(e))
+
         return True
 
     def recommendation(self, feature_list):
         val = {}
         recommendation = {}
 
-        val['car'] = randint(0, 9)
-        val['bike'] = randint(0,9)
-        val['transit'] = randint(0,9)
+        try: 
+            logging.info(str(feature_list))
+            recommendation = ml.models_opinion(feature_list)
+        except Exception as e:
+            logging.error("Error calling ml backend: " + str(e)) 
 
         recommendation['recommendation'] = max(val, key=val.get)
 
-        # Call ML backend
-
         return recommendation
-
-
-
-
-
-
-
-

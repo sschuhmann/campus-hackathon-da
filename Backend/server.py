@@ -20,6 +20,7 @@ reasoner = Reasoning()
 
 logging.getLogger().setLevel(logging.DEBUG)
 
+"""
 @server.route('/tour', methods=['POST'])
 def get_tour():
     logging.debug("Getting tour request")
@@ -27,13 +28,14 @@ def get_tour():
 
     if not content:
         logging.debug("No json content")
-        return jsonify({"Message": "No content"})
 
+        return jsonify({"Message": "No content"})
     try: 
         return jsonify({})
     except:
         return jsonify({"": ""})
 
+""" 
 
 @server.route('/route', methods=['POST'])
 def get_route():
@@ -58,7 +60,7 @@ def get_route():
 
         res = reasoner.recommendation(feature_set)
         id = uuid.uuid4().hex
-        value_map['id'] = content 
+        value_map['id'] = feature_set 
         res['id'] = id
         return jsonify(res)
     except Exception as e:
@@ -88,17 +90,12 @@ def feedback():
         timestamp = datetime.datetime.strptime(
                             content['date_time'], 
                             "%Y-%m-%dT%H:%M")
-
-    logging.debug(str(content))
-
-    feature_set = r.build_feature_set(content['start'], 
-                    content['destination'], 
-                    timestamp)
+    
     feature_type = content['type']
 
-    reasoner.train_model(feature_set, feature_type)
+    reasoner.train_model(value_map['id'], feature_type)
 
-    return "Ok", 200
+    return jsonify({"Message": "Model trained"}), 200
 
 if __name__ == '__main__':
     server.run(host="0.0.0.0", port=12000,debug=True)
