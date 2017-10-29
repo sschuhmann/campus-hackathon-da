@@ -1,8 +1,16 @@
+import time
+import json
+import datetime
 from sklearn.neural_network import MLPClassifier
 from twython import Twython
 import pickle
 import os.path
 import numpy as np
+import random
+import keras
+from keras.models import Sequential
+from keras.layers import Dense
+
 
 def feedback(requestframe, vehicle):
     # receive the actual transport vehicle that was taken
@@ -12,45 +20,42 @@ def feedback(requestframe, vehicle):
     dataframe = create_dataframe(requestframe, vehicle)
     #add dataframe to the data table
     writeFrame(dataframe)
-
+    set = True
     # load ml classifier
-    if not os.path.isfile('model/classifier.pickle'):
+    if not os.path.isfile('model/classifier'):
         #create classifier
-        classifier = MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(20,20), random_state=1)
+        classifier = Sequential()
+        classifier.add(Dense(12, input_dim=20, activation='relu'))
+        classifier.add(Dense(8, activation='relu'))
+        classifier.add(Dense(3, activation='softmax'))
+        classifier.compile(loss='crossentropy', optimizer='adam', metrics=['accuracy'])
+
     else:
         #load classifier
-        f = open('model/classifier.pickle', 'rb')
-        classifier = pickle.load(f)
-        f.close()
+        classifier = keras.models.load_model('model/classifier')
 
     # update the ml-classifier
-    print(dataframe)
-    X = [dataframe[key] for key in removekey(dataframe, 'vehicle').keys()]
-    X = [[x] for x in X]
-    X = np.array(X)
-    print(X)
+    X = [[dataframe[key] for key in removekey(dataframe, 'vehicle').keys()]]
 
     y = [dataframe['vehicle']]
-    classifier.partial_fit(X,y, [1,2,3])
+
+    classifier.fit(np.array(X),np.array(y),epochs=150, batch_size=10)
 
     #store the classifier in /model
-    f = open('model/classifier.pickle', 'wb')
-    pickle.dump(classifier, f)
-    f.close()
+
+    classifier.save('model/classifier')
     return ''
 
 def models_opinion(requestframe):
 
     #create dataframe
     dataframe = create_dataframe(requestframe, '')
-    X = removekey(dataframe, 'vehicle')
+    X = [[dataframe[key] for key in removekey(dataframe, 'vehicle').keys()]]
 
     #load classifier
-    f = open('model/classifier.pickle', 'rb')
-    classifier = pickle.load(f)
-    f.close()
+    classifier = keras.models.load_model('model/classifier')
 
-    return classifier.predict(X) #TODO Formulate Prediction for Backend
+    return classifier.predict(np.array(X)) #TODO Formulate Prediction for Backend
 
 
 def create_dataframe(requestframe, vehicle):
@@ -73,26 +78,38 @@ def create_dataframe(requestframe, vehicle):
     dataframe['Daytime'] = minutes_since_midnight
 
     #get twitter data
-    dataframe['StauScore'] = recent_schlagwort_score('stau', location)
-    dataframe['DBVerspätungsScore'] = recent_schlagwort_score('Bahn Verspätung', location)
-    dataframe['FerienScore'] = recent_schlagwort_score('Ferien', location)
-    dataframe['Feiertag'] = recent_schlagwort_score('Feiertag', location)
-    dataframe['Sonnig'] = recent_schlagwort_score('Sonnig', location)
-    dataframe['Regen'] = recent_schlagwort_score('Regen', location)
-    dataframe['Schnee'] = recent_schlagwort_score('Schnee', location)
-    dataframe['Sturm'] = recent_schlagwort_score('Feiertag', location)
-    dataframe['Verkehr'] = recent_schlagwort_score('Verkehr', location)
-    dataframe['Fahrrad'] = recent_schlagwort_score('Fahrrad', location)
-    dataframe['Auto'] = recent_schlagwort_score('Auto', location)
-    dataframe['Bahn'] = recent_schlagwort_score('Bahn', location)
+    #dataframe['StauScore'] = recent_schlagwort_score('stau', location)
+    #dataframe['DBVerspätungsScore'] = recent_schlagwort_score('Bahn Verspätung', location)
+    #dataframe['FerienScore'] = recent_schlagwort_score('Ferien', location)
+    #dataframe['Feiertag'] = recent_schlagwort_score('Feiertag', location)
+    #dataframe['Sonnig'] = recent_schlagwort_score('Sonnig', location)
+    #dataframe['Regen'] = recent_schlagwort_score('Regen', location)
+    #dataframe['Schnee'] = recent_schlagwort_score('Schnee', location)
+    #dataframe['Sturm'] = recent_schlagwort_score('Feiertag', location)
+    #dataframe['Verkehr'] = recent_schlagwort_score('Verkehr', location)
+    #dataframe['Fahrrad'] = recent_schlagwort_score('Fahrrad', location)
+    #dataframe['Auto'] = recent_schlagwort_score('Auto', location)
+    #dataframe['Bahn'] = recent_schlagwort_score('Bahn', location)
+    dataframe['StauScore'] = random.randrange(0, 1)
+    dataframe['DBVerspätungsScore'] = random.randrange(0, 1)
+    dataframe['FerienScore'] = random.randrange(0, 1)
+    dataframe['Feiertag'] = random.randrange(0, 1)
+    dataframe['Sonnig'] = random.randrange(0, 1)
+    dataframe['Regen'] = random.randrange(0, 1)
+    dataframe['Schnee'] = random.randrange(0, 1)
+    dataframe['Sturm'] = random.randrange(0, 1)
+    dataframe['Verkehr'] = random.randrange(0, 1)
+    dataframe['Fahrrad'] = random.randrange(0, 1)
+    dataframe['Auto'] = random.randrange(0, 1)
+    dataframe['Bahn'] = random.randrange(0, 1)
 
     #set vehicle
-    if vehicle == 'Car':
-        vehicle = 0
-    if vehicle == 'Bike':
-        vehicle == 1
-    if vehicle == 'Train':
-        vehicle = 3
+    if vehicle == 'car':
+        vehicle = [0,0,0]
+    if vehicle == 'bike':
+        vehicle = [0,1,0]
+    if vehicle == 'transit':
+        vehicle = [0,0,1]
     dataframe['vehicle'] = vehicle
 
     return dataframe
@@ -136,5 +153,3 @@ def removekey(d, key):
     r = dict(d)
     del r[key]
     return r
-
-# for testing: feedback(['Darmstadt', 2334, 35147, 6022, 31518, 1080, 30066], 'Car')

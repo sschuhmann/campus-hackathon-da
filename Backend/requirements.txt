@@ -18,3 +18,4 @@ datetime
 twython
 sklearn.neural_network
 pickle
+keras
