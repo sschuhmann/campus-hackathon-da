@@ -4,21 +4,23 @@
 
 <div class="container">
 <h1 style="text-align: center">
+    <img src="/assets/Images/HK.png" width="100" height="100"/>
     Welcome to Hong Kong!
 </h1>
 </div>
 <div class="container-fluid">
-  <div class="col-sm-2"></div>
+  <div class="col-sm-2">
+  </div>
 
   <div class="col-sm-4">
       <form  name="main" ngNativeValidate>
           <div class="form-group">
               <label for="inputStart">Startort</label>
-              <input class="form-control" name="inputStart" placeholder="Darmstadt" type="text" [(ngModel)]="start" required/>
+              <input class="form-control" name="inputStart" placeholder="z.B. Darmstadt" type="text" [(ngModel)]="start" required/>
           </div>
           <div class="form-group">
               <label for="inputDestination">Zielort</label>
-              <input class="form-control" name="inputDestination" placeholder="Frankfurt" type="text" [(ngModel)]="destination" required/>
+              <input class="form-control" name="inputDestination" placeholder="z.B. Frankfurt" type="text" [(ngModel)]="destination" required/>
           </div>
           <div class="form-group">
               <label for="inputDate">Datum</label>
@@ -28,16 +30,6 @@
               <input class="btn btn-primary" type="submit" (click)="getValues()" value="Go!"/>
         </div>
       </form>
-      <form name="feedback">
-        <div class="form-group" *ngIf="visibility">
-        <div class="btn-group">
-            <button id="buttonCar" type="button" class="btn btn-primary">Auto</button>
-            <button id="buttonTrain" type="button" class="btn btn-primary">Bahn</button>
-            <button id="buttonBike" type="button" class="btn btn-primary">Fahrrad</button>
-        </div>
-        <input class="btn btn-primary" type="submit" (click)="getValues()" value="Feedback senden"/>
-      </div>
-    </form>
   </div>
     <div class="col-sm-4" *ngIf="visibility">
         <h2>
@@ -46,6 +38,22 @@
       <img id="imageRecommendation" [src]="imagePath" width="300" height="250"/>
     </div>
   </div>
-
+    <div class="container" *ngIf="visibility">
+        <div class="col-sm-offset-2">
+            <form ngNativeValidate *ngIf="!visibilityFeedback">
+                <h3 style="align-content: center">
+                    Sende uns deine Entscheidung!
+                </h3>
+            <div class="form-group">
+                <button id="buttonCar" type="button" class="btn btn-primary" (click)="sendFeedback('car')">Auto</button>
+                <button id="buttonTrain" type="button" class="btn btn-primary" (click)="sendFeedback('transit')">Bahn</button>
+                <button id="buttonBike" type="button" class="btn btn-primary" (click)="sendFeedback('bike')">Fahrrad</button>
+            </div>
+          </form>
+          <h3 style="align-content: center" *ngIf="visibilityFeedback">
+              Vielen Dank!
+          </h3>
+          </div>
+        </div>
 
 

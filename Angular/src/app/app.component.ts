@@ -11,11 +11,14 @@ import {HttpErrorResponse} from '@angular/common/http';
 
 
 export class AppComponent {
-  id: string;
   start: string;
   destination: string;
   date_time: string;
+
+  id: string;
+
   visibility = false;
+  visibilityFeedback = false;
   imagePath: string;
 
 
@@ -23,14 +26,25 @@ export class AppComponent {
 
   getValues() {
     const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
-    this.httpClient.post('http://192.168.179.43:12000/route',
+    this.httpClient.post('http://192.168.179.46:12000/route',
     {start: this.start, destination: this.destination, date_time: this.date_time},
     {headers: headers})
     .subscribe(data => {
-      console.log(data['recommendation']);
-
+      this.id = data['id'];
       this.imagePath = '/assets/Images/' + data['recommendation'] + '.png';
       this.visibility = true;
+    }, (err: HttpErrorResponse) => {
+      console.log('Fehler');
+    });
+  }
+
+  sendFeedback(type: string) {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
+    this.httpClient.post('http://192.168.179.46:12000/feedback',
+    {id: this.id, type: type},
+    {headers: headers})
+    .subscribe(data => {
+      this.visibilityFeedback = true;
     }, (err: HttpErrorResponse) => {
       console.log('Fehler');
     });
