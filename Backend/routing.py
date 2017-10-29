@@ -5,6 +5,7 @@ import logging
 import pprint
 import json
 from random import randint
+import sys
 
 #import ml-model as ml
 
@@ -39,31 +40,56 @@ class Routing:
             return None
 
     def get_route_car(self, start, destination, timestamp):
-        result =  self.get_route(start, destination, timestamp, "driving")
         feature = []
-        feature.append(result['duration']['value'])
-        feature.append(result['distance']['value']) 
-        logging.debug("Feature set car: " + str(feature))       
-        return feature  
+        result =  self.get_route(start, destination, timestamp, "driving")
+
+        if not result:
+            return None
+
+        try:
+            feature.append(result['duration']['value'])
+            feature.append(result['distance']['value']) 
+            logging.debug("Feature set car: " + str(feature))       
+            return feature 
+        except:
+            feature.append(sys.maxint, sys.maxint)
+            return feature
+
+         
 
     def get_route_bike(self, start, destination, timestamp):
         feature = []
         result =  self.get_route(start, destination, timestamp, "bicycling")
-        feature.append(result['duration']['value'])
-        feature.append(result['distance']['value'])
-        logging.debug("Feature set bike: " + str(feature))
-        return feature
+
+        if not result:
+            return None
+
+        try: 
+            feature.append(result['duration']['value'])
+            feature.append(result['distance']['value'])
+            logging.debug("Feature set bike: " + str(feature))
+        except:
+            logging.error("Error getting bike route")
+            feature.append(sys.maxint, sys.maxint)
+
+        return feature        
 
     def get_route_transit(self, start, destination, timestamp):
         result = direction_result = self.gmaps.directions(start, destination, "transit")
         feature = []
 
-        for n in result:
-            for l in n['legs']:
-                logging.debug("Train: " + str(l['duration']))
-                feature.append(l['duration']['value'])
-                feature.append(l['distance']['value'])
-            
+        if not result:
+            return None
+
+        try:
+            for n in result:
+                for l in n['legs']:
+                    logging.debug("Train: " + str(l['duration']))
+                    feature.append(l['duration']['value'])
+                    feature.append(l['distance']['value'])
+        except:
+            logging.debug("Error getting transit route")
+            feature.append(sys.maxint, sys.maxint)
         
         logging.debug("Feature set transit: " + str(feature))
         return feature
@@ -78,7 +104,6 @@ class Routing:
         feature.extend(self.get_route_transit(start, destination, timestamp))
 
         logging.debug("Featureset: " + str(feature))
-
         return feature
 
 class Reasoning: 
@@ -87,18 +112,21 @@ class Reasoning:
         pass 
 
     def train_model(self, feature_list, type):
-        # Call ML
-
+        logging.debug("Train ML model")
+        
         return True
 
     def recommendation(self, feature_list):
         val = {}
+        recommendation = {}
 
         val['car'] = randint(0, 9)
         val['bike'] = randint(0,9)
         val['transit'] = randint(0,9)
 
-        recommendation = max(val, key=val.get)
+        recommendation['recommendation'] = max(val, key=val.get)
+
+        # Call ML backend
 
         return recommendation
 
