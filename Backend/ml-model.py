@@ -25,10 +25,10 @@ def feedback(requestframe, vehicle):
     if not os.path.isfile('model/classifier'):
         #create classifier
         classifier = Sequential()
-        classifier.add(Dense(12, input_dim=20, activation='relu'))
+        classifier.add(Dense(1, input_dim=20, activation='relu'))
         classifier.add(Dense(8, activation='relu'))
         classifier.add(Dense(3, activation='softmax'))
-        classifier.compile(loss='crossentropy', optimizer='adam', metrics=['accuracy'])
+        classifier.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 
     else:
         #load classifier
@@ -39,7 +39,7 @@ def feedback(requestframe, vehicle):
 
     y = [dataframe['vehicle']]
 
-    classifier.fit(np.array(X),np.array(y),epochs=150, batch_size=10)
+    classifier.fit(np.array(X),np.array(y),epochs=1, batch_size=1)
 
     #store the classifier in /model
 
@@ -55,7 +55,12 @@ def models_opinion(requestframe):
     #load classifier
     classifier = keras.models.load_model('model/classifier')
 
-    return classifier.predict(np.array(X)) #TODO Formulate Prediction for Backend
+    decision = classifier.predict(np.array(X)).tolist() #TODO Formulate Prediction for Backend
+    decision_dict = {}
+    decision_dict['car'] = decision[0]
+    decision_dict['bike'] = decision[1]
+    decision_dict['transit'] = decision[2]
+    return decision
 
 
 def create_dataframe(requestframe, vehicle):
@@ -105,7 +110,7 @@ def create_dataframe(requestframe, vehicle):
 
     #set vehicle
     if vehicle == 'car':
-        vehicle = [0,0,0]
+        vehicle = [1,0,0]
     if vehicle == 'bike':
         vehicle = [0,1,0]
     if vehicle == 'transit':
